@@ -1,3 +1,6 @@
+from django.urls import path, include
+from django.shortcuts import redirect
+
 """
 URL configuration for biblioteca project.
 
@@ -19,7 +22,8 @@ from django.urls import path
 from core import views
 
 urlpatterns = [
-    path('livros/', views.livro_list_create, name='livros-list-create'),
-    path('livros/<int:pk>/', views.livro_detail, name='livro-detail'),
-    path('admin/', admin.site.urls),
+    path('', lambda request: redirect('/admin')),  # Redireciona para /livros/
+    path('livros', views.livro_list_create, name='livros-list-create'),
+    path('livros/<int:pk>', views.livro_detail, name='livro-detail'),
+    path('admin', admin.site.urls),
 ]
