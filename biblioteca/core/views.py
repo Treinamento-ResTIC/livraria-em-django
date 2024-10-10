@@ -1,42 +1,20 @@
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import generics
 from .models import Livro
 from .serializers import LivroSerializer
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters
+from .filters import LivroFilter 
 
+# Classe para listar e criar livros
+class LivroList(generics.ListCreateAPIView):
+    queryset = Livro.objects.all()
+    serializer_class = LivroSerializer
+    filterset_class = LivroFilter  # Adiciona o filtro personalizado
+    filter_backends = (DjangoFilterBackend, filters.OrderingFilter, filters.SearchFilter)  # Define os filtros
+    ordering_fields = ['titulo', 'autor', 'categoria', 'publicado_em', 'categoria__nome']  # Campos que podem ser ordenados
+    search_fields = ['titulo', 'autor__nome', 'categoria__nome']  # Campos que podem ser pesquisados
 
-@api_view(['GET', 'POST'])
-def livro_list_create(request):
-    if request.method == 'GET':
-        livros = Livro.objects.all()
-        serializer = LivroSerializer(livros, many=True)
-        return Response(serializer.data)
-    elif request.method == 'POST':
-        serializer = LivroSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-@api_view(['GET', 'PUT', 'DELETE'])
-def livro_detail(request, pk):
-    try:
-        livro = Livro.objects.get(pk=pk)
-    except Livro.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
-
-    if request.method == 'GET':
-        serializer = LivroSerializer(livro)
-        return Response(serializer.data)
-
-    elif request.method == 'PUT':
-        serializer = LivroSerializer(livro, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    elif request.method == 'DELETE':
-        livro.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+# Classe para detalhar, atualizar e deletar um livro específico
+class LivroDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Livro.objects.all()  # Consulta todos os livros
+    serializer_class = LivroSerializer  # Define o serializer a ser usado

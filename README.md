@@ -1,2 +1,5 @@
 # livraria-em-django
-Exercício Prático: ORM Django, Serializadores e Function-Based Views
+
+**Exercício Prático:** Class-Based Views, Paginação, Busca e Ordenação
+
+**Aluno:** Marcos Vinícius Ferreira dos Santos
